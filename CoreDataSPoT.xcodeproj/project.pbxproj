@@ -21,6 +21,10 @@
 		F2AEC3DA16E7F033004ED2D5 /* SPoTViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC3D916E7F033004ED2D5 /* SPoTViewController.m */; };
 		F2AEC3E216E7F096004ED2D5 /* CoreDataTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC3E116E7F096004ED2D5 /* CoreDataTableViewController.m */; };
 		F2AEC3E716E7F0A4004ED2D5 /* FlickrFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC3E616E7F0A4004ED2D5 /* FlickrFetcher.m */; };
+		F2AEC3EA16E8C42B004ED2D5 /* SPoTTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC3E916E8C42B004ED2D5 /* SPoTTableViewController.m */; };
+		F2AEC3ED16E8C449004ED2D5 /* SPoTDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC3EC16E8C449004ED2D5 /* SPoTDetailTableViewController.m */; };
+		F2AEC3F016E8C463004ED2D5 /* SPoTRecentTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC3EF16E8C463004ED2D5 /* SPoTRecentTableViewController.m */; };
+		F2AEC3F316E8C48F004ED2D5 /* SPoTImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC3F216E8C48F004ED2D5 /* SPoTImageViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +50,14 @@
 		F2AEC3E416E7F0A4004ED2D5 /* FlickrAPIKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlickrAPIKey.h; sourceTree = "<group>"; };
 		F2AEC3E516E7F0A4004ED2D5 /* FlickrFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlickrFetcher.h; sourceTree = "<group>"; };
 		F2AEC3E616E7F0A4004ED2D5 /* FlickrFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FlickrFetcher.m; sourceTree = "<group>"; };
+		F2AEC3E816E8C42B004ED2D5 /* SPoTTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPoTTableViewController.h; sourceTree = "<group>"; };
+		F2AEC3E916E8C42B004ED2D5 /* SPoTTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPoTTableViewController.m; sourceTree = "<group>"; };
+		F2AEC3EB16E8C449004ED2D5 /* SPoTDetailTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPoTDetailTableViewController.h; sourceTree = "<group>"; };
+		F2AEC3EC16E8C449004ED2D5 /* SPoTDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPoTDetailTableViewController.m; sourceTree = "<group>"; };
+		F2AEC3EE16E8C463004ED2D5 /* SPoTRecentTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPoTRecentTableViewController.h; sourceTree = "<group>"; };
+		F2AEC3EF16E8C463004ED2D5 /* SPoTRecentTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPoTRecentTableViewController.m; sourceTree = "<group>"; };
+		F2AEC3F116E8C48F004ED2D5 /* SPoTImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPoTImageViewController.h; sourceTree = "<group>"; };
+		F2AEC3F216E8C48F004ED2D5 /* SPoTImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPoTImageViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +107,14 @@
 				F2AEC3C916E7F032004ED2D5 /* SPoTAppDelegate.h */,
 				F2AEC3CA16E7F032004ED2D5 /* SPoTAppDelegate.m */,
 				F2AEC3D216E7F032004ED2D5 /* MainStoryboard_iPhone.storyboard */,
+				F2AEC3E816E8C42B004ED2D5 /* SPoTTableViewController.h */,
+				F2AEC3E916E8C42B004ED2D5 /* SPoTTableViewController.m */,
+				F2AEC3EB16E8C449004ED2D5 /* SPoTDetailTableViewController.h */,
+				F2AEC3EC16E8C449004ED2D5 /* SPoTDetailTableViewController.m */,
+				F2AEC3EE16E8C463004ED2D5 /* SPoTRecentTableViewController.h */,
+				F2AEC3EF16E8C463004ED2D5 /* SPoTRecentTableViewController.m */,
+				F2AEC3F116E8C48F004ED2D5 /* SPoTImageViewController.h */,
+				F2AEC3F216E8C48F004ED2D5 /* SPoTImageViewController.m */,
 				F2AEC3D516E7F033004ED2D5 /* MainStoryboard_iPad.storyboard */,
 				F2AEC3D816E7F033004ED2D5 /* SPoTViewController.h */,
 				F2AEC3E316E7F0A4004ED2D5 /* FlickrFetcher */,
@@ -203,6 +223,10 @@
 				F2AEC3DA16E7F033004ED2D5 /* SPoTViewController.m in Sources */,
 				F2AEC3E216E7F096004ED2D5 /* CoreDataTableViewController.m in Sources */,
 				F2AEC3E716E7F0A4004ED2D5 /* FlickrFetcher.m in Sources */,
+				F2AEC3EA16E8C42B004ED2D5 /* SPoTTableViewController.m in Sources */,
+				F2AEC3ED16E8C449004ED2D5 /* SPoTDetailTableViewController.m in Sources */,
+				F2AEC3F016E8C463004ED2D5 /* SPoTRecentTableViewController.m in Sources */,
+				F2AEC3F316E8C48F004ED2D5 /* SPoTImageViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
