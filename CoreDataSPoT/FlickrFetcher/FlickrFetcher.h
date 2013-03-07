@@ -34,4 +34,6 @@ typedef enum {
 
 + (NSArray *)latestGeoreferencedPhotos;
 
++ (NSString *) stringValueFromKey:(NSDictionary *)dict nameKey:(NSString*)key;
+
 @end

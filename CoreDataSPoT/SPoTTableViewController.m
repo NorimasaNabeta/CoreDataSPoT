@@ -7,12 +7,46 @@
 //
 
 #import "SPoTTableViewController.h"
+#import "FlickrFetcher.h"
 
 @interface SPoTTableViewController ()
+@property (nonatomic,strong) NSDictionary *photoList;
 
 @end
 
 @implementation SPoTTableViewController
+
+//
+//
+//
+- (IBAction)refresh
+{
+    [self.refreshControl beginRefreshing];
+    dispatch_queue_t q = dispatch_queue_create("table view loading queue", NULL);
+    dispatch_async(q, ^{
+        NSArray *photos = [FlickrFetcher stanfordPhotos];
+        NSMutableDictionary *work = [[NSMutableDictionary alloc] init];
+        for (NSDictionary *photo in photos) {
+            // NSLog(@"%@", photo[FLICKR_TAGS]);
+            NSArray *tags = [photo[FLICKR_TAGS] componentsSeparatedByString:@" "];
+            for (NSString *tag in tags) {
+                if ((! [tag isEqualToString:@"cs193pspot"]) &&
+                    (! [tag isEqualToString:@"portrait"]) && (! [tag isEqualToString:@"landscape"])){
+                    // NSLog(@">> %@", tag);
+                    if (! work[tag]) {
+                        work[tag] = [[NSMutableArray alloc] init];
+                    }
+                    [work[tag] addObject:photo];
+                }
+            }
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.refreshControl endRefreshing];
+            self.photoList = work;
+            [self.tableView reloadData];
+        });
+    });
+}
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -32,6 +66,10 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    [self.refreshControl addTarget:self
+                            action:@selector(refresh)
+                  forControlEvents:UIControlEventValueChanged];
+    [self refresh];
 }
 
 - (void)didReceiveMemoryWarning
@@ -40,31 +78,62 @@
     // Dispose of any resources that can be recreated.
 }
 
+
+#pragma mark - Segue
+
+// prepares for the "Show Image" segue by seeing if the destination view controller of the segue
+//  understands the method "setImageURL:"
+// if it does, it sends setImageURL: to the destination view controller with
+//  the URL of the photo that was selected in the UITableView as the argument
+// also sets the title of the destination view controller to the photo's title
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue
+                 sender:(id)sender
+{
+    if ([sender isKindOfClass:[UITableViewCell class]]) {
+        NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
+        if (indexPath) {
+            if ([segue.identifier isEqualToString:@"Show Detail"]) {
+                if ([segue.destinationViewController respondsToSelector:@selector(setPhotos:)]) {
+                    NSString *tag = [[self.photoList allKeys] objectAtIndex:indexPath.item];
+                    NSArray *list = self.photoList[tag];
+                    [segue.destinationViewController performSelector:@selector(setPhotos:)
+                                                          withObject:list];
+                    [segue.destinationViewController setTitle:tag];
+                }
+            }
+        }
+    }
+}
+
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
-    // Return the number of sections.
-    return 0;
+    return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(UITableView *)tableView
+ numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+    return [[self.photoList allKeys] count];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)tableView:(UITableView *)tableView
+         cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    static NSString *CellIdentifier = @"Photo Tag";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier
+                                                            forIndexPath:indexPath];
     
-    // Configure the cell...
+    NSString *tag = [[self.photoList allKeys] objectAtIndex:indexPath.item];
+    cell.textLabel.text = tag;
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"Count: %d", [self.photoList[tag] count]];
     
     return cell;
 }
+
 
 /*
 // Override to support conditional editing of the table view.

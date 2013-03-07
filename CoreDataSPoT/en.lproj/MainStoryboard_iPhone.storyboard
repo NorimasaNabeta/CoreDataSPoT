@@ -13,16 +13,28 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="XAX-7R-pY3">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Flickr Photo" textLabel="atx-Z7-Q2a" detailTextLabel="1J8-Pl-Prq" style="IBUITableViewCellStyleSubtitle" id="XAX-7R-pY3">
                                 <rect key="frame" x="0.0" y="22" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="300" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="atx-Z7-Q2a">
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1J8-Pl-Prq">
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <color key="textColor" red="0.50196078431372548" green="0.50196078431372548" blue="0.50196078431372548" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </label>
+                                    </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
                                 <connections>
-                                    <segue destination="2" kind="push" id="BJT-QN-sTa"/>
+                                    <segue destination="2" kind="push" identifier="Show Image" id="BJT-QN-sTa"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -70,7 +82,7 @@
             </objects>
             <point key="canvasLocation" x="2965" y="-10"/>
         </scene>
-        <!--PoT Table View Controller-->
+        <!--PoT Table View Controller - SPoT-->
         <scene sceneID="LeA-yg-DOk">
             <objects>
                 <tableViewController id="SWN-ii-8Ko" customClass="SPoTTableViewController" sceneMemberID="viewController">
@@ -79,16 +91,28 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="KzI-3G-mKJ">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" showsReorderControl="YES" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Photo Tag" textLabel="f9R-Te-jsI" detailTextLabel="ne3-7Q-HTq" style="IBUITableViewCellStyleSubtitle" id="KzI-3G-mKJ">
                                 <rect key="frame" x="0.0" y="22" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                     <rect key="frame" x="0.0" y="0.0" width="300" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f9R-Te-jsI">
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </label>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ne3-7Q-HTq">
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <color key="textColor" red="0.50196078431372548" green="0.50196078431372548" blue="0.50196078431372548" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </label>
+                                    </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
                                 <connections>
-                                    <segue destination="4pM-Vn-rvK" kind="push" id="7sq-bP-Ha3"/>
+                                    <segue destination="4pM-Vn-rvK" kind="push" identifier="Show Detail" id="7sq-bP-Ha3"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -97,13 +121,13 @@
                             <outlet property="delegate" destination="SWN-ii-8Ko" id="k2b-MF-XbD"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="hpR-Lf-AML"/>
+                    <navigationItem key="navigationItem" title="SPoT" id="hpR-Lf-AML"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bqw-2A-2dT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1839" y="-326"/>
         </scene>
-        <!--PoT Recent Table View Controller-->
+        <!--PoT Recent Table View Controller - Recents-->
         <scene sceneID="jCQ-lL-Yrd">
             <objects>
                 <tableViewController id="P5k-Ns-znj" customClass="SPoTRecentTableViewController" sceneMemberID="viewController">
@@ -112,7 +136,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="sOj-NP-Dee">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Recent Photo" id="sOj-NP-Dee">
                                 <rect key="frame" x="0.0" y="22" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -121,7 +145,7 @@
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
                                 <connections>
-                                    <segue destination="2" kind="push" id="OsU-We-J8i"/>
+                                    <segue destination="2" kind="push" identifier="Show Recent" id="OsU-We-J8i"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -130,7 +154,7 @@
                             <outlet property="delegate" destination="P5k-Ns-znj" id="eax-WF-dxy"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="exr-eH-3qz"/>
+                    <navigationItem key="navigationItem" title="Recents" id="exr-eH-3qz"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lQB-oG-2LL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

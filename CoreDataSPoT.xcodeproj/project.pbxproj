@@ -25,6 +25,7 @@
 		F2AEC3ED16E8C449004ED2D5 /* SPoTDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC3EC16E8C449004ED2D5 /* SPoTDetailTableViewController.m */; };
 		F2AEC3F016E8C463004ED2D5 /* SPoTRecentTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC3EF16E8C463004ED2D5 /* SPoTRecentTableViewController.m */; };
 		F2AEC3F316E8C48F004ED2D5 /* SPoTImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC3F216E8C48F004ED2D5 /* SPoTImageViewController.m */; };
+		F2AEC3F616E8CBC9004ED2D5 /* RecentsStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC3F516E8CBC9004ED2D5 /* RecentsStore.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +59,8 @@
 		F2AEC3EF16E8C463004ED2D5 /* SPoTRecentTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPoTRecentTableViewController.m; sourceTree = "<group>"; };
 		F2AEC3F116E8C48F004ED2D5 /* SPoTImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPoTImageViewController.h; sourceTree = "<group>"; };
 		F2AEC3F216E8C48F004ED2D5 /* SPoTImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPoTImageViewController.m; sourceTree = "<group>"; };
+		F2AEC3F416E8CBC9004ED2D5 /* RecentsStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecentsStore.h; sourceTree = "<group>"; };
+		F2AEC3F516E8CBC9004ED2D5 /* RecentsStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentsStore.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +116,8 @@
 				F2AEC3EC16E8C449004ED2D5 /* SPoTDetailTableViewController.m */,
 				F2AEC3EE16E8C463004ED2D5 /* SPoTRecentTableViewController.h */,
 				F2AEC3EF16E8C463004ED2D5 /* SPoTRecentTableViewController.m */,
+				F2AEC3F416E8CBC9004ED2D5 /* RecentsStore.h */,
+				F2AEC3F516E8CBC9004ED2D5 /* RecentsStore.m */,
 				F2AEC3F116E8C48F004ED2D5 /* SPoTImageViewController.h */,
 				F2AEC3F216E8C48F004ED2D5 /* SPoTImageViewController.m */,
 				F2AEC3D516E7F033004ED2D5 /* MainStoryboard_iPad.storyboard */,
@@ -227,6 +232,7 @@
 				F2AEC3ED16E8C449004ED2D5 /* SPoTDetailTableViewController.m in Sources */,
 				F2AEC3F016E8C463004ED2D5 /* SPoTRecentTableViewController.m in Sources */,
 				F2AEC3F316E8C48F004ED2D5 /* SPoTImageViewController.m in Sources */,
+				F2AEC3F616E8CBC9004ED2D5 /* RecentsStore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
