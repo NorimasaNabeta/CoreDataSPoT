@@ -12,15 +12,6 @@
 
 @interface SPoTDetailTableViewController : CoreDataTableViewController
 
-//- (NSString *)titleForRow:(NSUInteger)row;
-//- (NSString *)subtitleForRow:(NSUInteger)row;
-
-// the Model for this VC
-// an array of dictionaries of Flickr information
-// obtained using Flickr API
-// (e.g. FlickrFetcher will obtain such an array of dictionaries)
-//@property (nonatomic, strong) NSArray *photos; // of NSDictionary
-
 @property (nonatomic, strong) Photographer *photographer;
 
 @end

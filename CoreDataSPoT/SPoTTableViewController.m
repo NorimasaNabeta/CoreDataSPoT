@@ -11,16 +11,27 @@
 #import "Photo+Flickr.h"
 #import "Photographer.h"
 
-@interface SPoTTableViewController ()
+@interface SPoTTableViewController () <UISplitViewControllerDelegate>
 @property (nonatomic,strong) NSDictionary *photoList;
 
 @end
 
 @implementation SPoTTableViewController
 
-//
-//
-//
+#pragma mark - UISplitViewControllerDelegate
+
+- (void)awakeFromNib
+{
+    self.splitViewController.delegate = self;
+}
+
+- (BOOL)splitViewController:(UISplitViewController *)svc
+   shouldHideViewController:(UIViewController *)vc
+              inOrientation:(UIInterfaceOrientation)orientation
+{
+    return NO; // never hide it.
+    //    return UIInterfaceOrientationIsPortrait(orientation);
+}
 
 
 - (void)viewDidLoad

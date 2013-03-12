@@ -14,84 +14,14 @@
 #import "Photographer.h"
 
 
-@interface SPoTDetailTableViewController () <UISplitViewControllerDelegate>
+@interface SPoTDetailTableViewController () 
 
 @end
 
 @implementation SPoTDetailTableViewController
 
-#pragma mark - UISplitViewControllerDelegate
-
-- (void)awakeFromNib
-{
-    self.splitViewController.delegate = self;
-}
-
-- (BOOL)splitViewController:(UISplitViewController *)svc
-   shouldHideViewController:(UIViewController *)vc
-              inOrientation:(UIInterfaceOrientation)orientation
-{
-    return NO; // never hide it.
-    //    return UIInterfaceOrientationIsPortrait(orientation);
-}
-
 
 #pragma mark - Table view data source
-
-//- (void)setPhotos:(NSArray *)photos
-//{
-//    _photos = photos;
-//    
-//    [self.tableView reloadData];
-//}
-
-
-//#pragma mark - UITableViewDataSource
-//
-//// lets the UITableView know how many rows it should display
-//// in this case, just the count of dictionaries in the Model's array
-//
-//- (NSInteger)tableView:(UITableView *)tableView
-// numberOfRowsInSection:(NSInteger)section
-//{
-//    return [self.photos count];
-//}
-//
-//// a helper method that looks in the Model for the photo dictionary at the given row
-////  and gets the title out of it
-//
-//- (NSString *)titleForRow:(NSUInteger)row
-//{
-//    return [self.photos[row][FLICKR_PHOTO_TITLE] description]; // description because could be NSNull
-//}
-//
-//// a helper method that looks in the Model for the photo dictionary at the given row
-////  and gets the owner of the photo out of it
-//
-//- (NSString *)subtitleForRow:(NSUInteger)row
-//{
-//    //    return [self.photos[row][FLICKR_PHOTO_OWNER] description]; // description because could be NSNull
-//    // NOT objectForKey: FLICKR_PHOTO_DESCRIPTION is @"description._content"
-//    return [self.photos[row] valueForKeyPath:FLICKR_PHOTO_DESCRIPTION];
-//    
-//}
-//
-//// loads up a table view cell with the title and owner of the photo at the given row in the Model
-//
-//- (UITableViewCell *)tableView:(UITableView *)tableView
-//         cellForRowAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    static NSString *CellIdentifier = @"Flickr Photo";
-//    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier
-//                                                            forIndexPath:indexPath];
-//    
-//    // Configure the cell...
-//    cell.textLabel.text = [self titleForRow:indexPath.row];
-//    cell.detailTextLabel.text = [self subtitleForRow:indexPath.row];
-//    
-//    return cell;
-//}
-
 
 #pragma mark - Properties
 
@@ -167,6 +97,8 @@
             if ([segue.destinationViewController respondsToSelector:@selector(setTitle:)]) {
                 [segue.destinationViewController performSelector:@selector(setTitle:) withObject:photo.title];
             }
+            //[RecentsStore pushList:self.photos[indexPath.row]];
+
         }
     }
 }
