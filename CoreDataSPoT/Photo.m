@@ -16,6 +16,7 @@
 @dynamic subtitle;
 @dynamic unique;
 @dynamic imageURL;
+@dynamic thumbnailURL;
 @dynamic whoTook;
 
 @end

@@ -27,11 +27,12 @@
 		F2AEC3F316E8C48F004ED2D5 /* SPoTImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC3F216E8C48F004ED2D5 /* SPoTImageViewController.m */; };
 		F2AEC3F616E8CBC9004ED2D5 /* RecentsStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC3F516E8CBC9004ED2D5 /* RecentsStore.m */; };
 		F2AEC3F916EF456E004ED2D5 /* SPoT.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC3F716EF456E004ED2D5 /* SPoT.xcdatamodeld */; };
-		F2AEC40216EF489F004ED2D5 /* Photographer.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC40116EF489E004ED2D5 /* Photographer.m */; };
-		F2AEC40516EF48A0004ED2D5 /* Photo.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC40416EF48A0004ED2D5 /* Photo.m */; };
 		F2AEC40816EF4CBF004ED2D5 /* Photo+Flickr.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC40716EF4CBE004ED2D5 /* Photo+Flickr.m */; };
 		F2AEC40B16EF4D6C004ED2D5 /* Photographer+Create.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC40A16EF4D6C004ED2D5 /* Photographer+Create.m */; };
 		F2AEC40D16EF4E1B004ED2D5 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F2AEC40C16EF4E1B004ED2D5 /* CoreData.framework */; };
+		F2AEC41116EF5E29004ED2D5 /* Photo.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC41016EF5E29004ED2D5 /* Photo.m */; };
+		F2AEC41416EF5E29004ED2D5 /* Photographer.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC41316EF5E29004ED2D5 /* Photographer.m */; };
+		F2AEC41616EF5ED9004ED2D5 /* darkorange.png in Resources */ = {isa = PBXBuildFile; fileRef = F2AEC41516EF5ED9004ED2D5 /* darkorange.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,15 +69,16 @@
 		F2AEC3F416E8CBC9004ED2D5 /* RecentsStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecentsStore.h; sourceTree = "<group>"; };
 		F2AEC3F516E8CBC9004ED2D5 /* RecentsStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecentsStore.m; sourceTree = "<group>"; };
 		F2AEC3F816EF456E004ED2D5 /* SPoT.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SPoT.xcdatamodel; sourceTree = "<group>"; };
-		F2AEC40016EF489E004ED2D5 /* Photographer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Photographer.h; sourceTree = "<group>"; };
-		F2AEC40116EF489E004ED2D5 /* Photographer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Photographer.m; sourceTree = "<group>"; };
-		F2AEC40316EF48A0004ED2D5 /* Photo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Photo.h; sourceTree = "<group>"; };
-		F2AEC40416EF48A0004ED2D5 /* Photo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Photo.m; sourceTree = "<group>"; };
 		F2AEC40616EF4CBE004ED2D5 /* Photo+Flickr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Photo+Flickr.h"; sourceTree = "<group>"; };
 		F2AEC40716EF4CBE004ED2D5 /* Photo+Flickr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Photo+Flickr.m"; sourceTree = "<group>"; };
 		F2AEC40916EF4D6C004ED2D5 /* Photographer+Create.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Photographer+Create.h"; sourceTree = "<group>"; };
 		F2AEC40A16EF4D6C004ED2D5 /* Photographer+Create.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Photographer+Create.m"; sourceTree = "<group>"; };
 		F2AEC40C16EF4E1B004ED2D5 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		F2AEC40F16EF5E29004ED2D5 /* Photo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Photo.h; sourceTree = "<group>"; };
+		F2AEC41016EF5E29004ED2D5 /* Photo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Photo.m; sourceTree = "<group>"; };
+		F2AEC41216EF5E29004ED2D5 /* Photographer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Photographer.h; sourceTree = "<group>"; };
+		F2AEC41316EF5E29004ED2D5 /* Photographer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Photographer.m; sourceTree = "<group>"; };
+		F2AEC41516EF5ED9004ED2D5 /* darkorange.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = darkorange.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,6 +156,7 @@
 		F2AEC3C116E7F032004ED2D5 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				F2AEC41516EF5ED9004ED2D5 /* darkorange.png */,
 				F2AEC3C216E7F032004ED2D5 /* CoreDataSPoT-Info.plist */,
 				F2AEC3C316E7F032004ED2D5 /* InfoPlist.strings */,
 				F2AEC3C616E7F032004ED2D5 /* main.m */,
@@ -178,13 +181,13 @@
 		F2AEC40E16EF4E73004ED2D5 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F2AEC41216EF5E29004ED2D5 /* Photographer.h */,
+				F2AEC41316EF5E29004ED2D5 /* Photographer.m */,
+				F2AEC40F16EF5E29004ED2D5 /* Photo.h */,
+				F2AEC41016EF5E29004ED2D5 /* Photo.m */,
 				F2AEC40716EF4CBE004ED2D5 /* Photo+Flickr.m */,
 				F2AEC40916EF4D6C004ED2D5 /* Photographer+Create.h */,
 				F2AEC40A16EF4D6C004ED2D5 /* Photographer+Create.m */,
-				F2AEC40016EF489E004ED2D5 /* Photographer.h */,
-				F2AEC40116EF489E004ED2D5 /* Photographer.m */,
-				F2AEC40316EF48A0004ED2D5 /* Photo.h */,
-				F2AEC40416EF48A0004ED2D5 /* Photo.m */,
 				F2AEC40616EF4CBE004ED2D5 /* Photo+Flickr.h */,
 			);
 			name = Model;
@@ -248,6 +251,7 @@
 				F2AEC3D116E7F032004ED2D5 /* Default-568h@2x.png in Resources */,
 				F2AEC3D416E7F032004ED2D5 /* MainStoryboard_iPhone.storyboard in Resources */,
 				F2AEC3D716E7F033004ED2D5 /* MainStoryboard_iPad.storyboard in Resources */,
+				F2AEC41616EF5ED9004ED2D5 /* darkorange.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,10 +273,10 @@
 				F2AEC3F316E8C48F004ED2D5 /* SPoTImageViewController.m in Sources */,
 				F2AEC3F616E8CBC9004ED2D5 /* RecentsStore.m in Sources */,
 				F2AEC3F916EF456E004ED2D5 /* SPoT.xcdatamodeld in Sources */,
-				F2AEC40216EF489F004ED2D5 /* Photographer.m in Sources */,
-				F2AEC40516EF48A0004ED2D5 /* Photo.m in Sources */,
 				F2AEC40816EF4CBF004ED2D5 /* Photo+Flickr.m in Sources */,
 				F2AEC40B16EF4D6C004ED2D5 /* Photographer+Create.m in Sources */,
+				F2AEC41116EF5E29004ED2D5 /* Photo.m in Sources */,
+				F2AEC41416EF5E29004ED2D5 /* Photographer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

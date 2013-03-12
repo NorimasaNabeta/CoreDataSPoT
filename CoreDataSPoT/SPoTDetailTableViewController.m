@@ -5,7 +5,7 @@
 //  Created by Norimasa Nabeta on 2013/03/07.
 //  Copyright (c) 2013年 CS193p. All rights reserved.
 //
-
+#import "SPoTAppDelegate.h"
 #import "SPoTDetailTableViewController.h"
 #import "FlickrFetcher.h"
 #import "RecentsStore.h"
@@ -57,6 +57,9 @@
 
 #pragma mark - UITableViewDataSource
 
+/*
+ */
+
 // Loads up the cell for a given row by getting the associated Photo from our NSFetchedResultsController.
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
@@ -69,6 +72,25 @@
     
     cell.textLabel.text = photo.title;
     cell.detailTextLabel.text = photo.subtitle;
+
+    id appDelegate = (id)[[UIApplication sharedApplication] delegate];
+    NSString *idThumbnail = photo.thumbnailURL;
+    UIImage *image = [[appDelegate imageCache] objectForKey:idThumbnail];
+    if (image) {
+        // NSLog(@"HIT user:%@ screen:%@", tweetuser, tweetscreenuser);
+        cell.imageView.image = image;
+    }
+    else {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSURL *url = [NSURL URLWithString:idThumbnail];
+            NSData *data = [NSData dataWithContentsOfURL:url];
+            [[appDelegate imageCache] setObject:[UIImage imageWithData:data] forKey:idThumbnail];
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [cell.imageView setImage:[UIImage imageWithData:data]];
+                [self.tableView reloadData];
+            });
+        });
+    }
     
     return cell;
     
