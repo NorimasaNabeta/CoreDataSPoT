@@ -37,6 +37,32 @@
 // adjusts the scroll view's content size to fit the image
 // sets the image as the image view's image
 
+
+/*
+ NSURL *url = [FlickrFetcher urlForPhoto:photo format:FlickrPhotoFormatSquare];
+ NSData *data = [NSData dataWithContentsOfURL:url];
+ 
+ 
+ id appDelegate = (id)[[UIApplication sharedApplication] delegate];
+ NSString *idThumbnail = [FlickrFetcher stringValueFromKey:photo nameKey:FLICKR_PHOTO_ID];
+ UIImage *image = [[appDelegate imageCache] objectForKey:idThumbnail];
+ if (image) {
+ // NSLog(@"HIT user:%@ screen:%@", tweetuser, tweetscreenuser);
+ cell.imageView.image = image;
+ }
+ else {
+ dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+ NSURL *url = [FlickrFetcher urlForPhoto:photo format:FlickrPhotoFormatSquare];
+ NSData *data = [NSData dataWithContentsOfURL:url];
+ [[appDelegate imageCache] setObject:[UIImage imageWithData:data] forKey:idThumbnail];
+ dispatch_sync(dispatch_get_main_queue(), ^{
+ [cell.imageView setImage:[UIImage imageWithData:data]];
+ [self.tableView reloadData];
+ });
+ });
+ }
+ */
+
 - (void)resetImage
 {
     if (self.scrollView) {

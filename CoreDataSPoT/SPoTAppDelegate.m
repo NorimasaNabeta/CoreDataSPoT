@@ -10,6 +10,18 @@
 
 @implementation SPoTAppDelegate
 
+- (NSCache*) imageCache
+{
+    if(_imageCache == nil){
+        _imageCache = [[NSCache alloc] init];
+        [_imageCache setName:@"FlickrThumbnailImageCache"];
+        [_imageCache setCountLimit:100];
+        [_imageCache setTotalCostLimit:1500000];
+        [_imageCache setEvictsObjectsWithDiscardedContent:YES];
+    }
+    return _imageCache;
+}
+
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
