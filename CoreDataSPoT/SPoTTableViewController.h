@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CoreDataTableViewController.h"
 
-@interface SPoTTableViewController : UITableViewController
+@interface SPoTTableViewController : CoreDataTableViewController
+@property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 
 @end

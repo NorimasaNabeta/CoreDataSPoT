@@ -10,6 +10,9 @@
 #import "FlickrFetcher.h"
 #import "RecentsStore.h"
 
+#import "Photo.h"
+#import "Photographer.h"
+
 
 @interface SPoTDetailTableViewController () <UISplitViewControllerDelegate>
 
@@ -32,164 +35,140 @@
     //    return UIInterfaceOrientationIsPortrait(orientation);
 }
 
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
 
 #pragma mark - Table view data source
 
-- (void)setPhotos:(NSArray *)photos
+//- (void)setPhotos:(NSArray *)photos
+//{
+//    _photos = photos;
+//    
+//    [self.tableView reloadData];
+//}
+
+
+//#pragma mark - UITableViewDataSource
+//
+//// lets the UITableView know how many rows it should display
+//// in this case, just the count of dictionaries in the Model's array
+//
+//- (NSInteger)tableView:(UITableView *)tableView
+// numberOfRowsInSection:(NSInteger)section
+//{
+//    return [self.photos count];
+//}
+//
+//// a helper method that looks in the Model for the photo dictionary at the given row
+////  and gets the title out of it
+//
+//- (NSString *)titleForRow:(NSUInteger)row
+//{
+//    return [self.photos[row][FLICKR_PHOTO_TITLE] description]; // description because could be NSNull
+//}
+//
+//// a helper method that looks in the Model for the photo dictionary at the given row
+////  and gets the owner of the photo out of it
+//
+//- (NSString *)subtitleForRow:(NSUInteger)row
+//{
+//    //    return [self.photos[row][FLICKR_PHOTO_OWNER] description]; // description because could be NSNull
+//    // NOT objectForKey: FLICKR_PHOTO_DESCRIPTION is @"description._content"
+//    return [self.photos[row] valueForKeyPath:FLICKR_PHOTO_DESCRIPTION];
+//    
+//}
+//
+//// loads up a table view cell with the title and owner of the photo at the given row in the Model
+//
+//- (UITableViewCell *)tableView:(UITableView *)tableView
+//         cellForRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    static NSString *CellIdentifier = @"Flickr Photo";
+//    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier
+//                                                            forIndexPath:indexPath];
+//    
+//    // Configure the cell...
+//    cell.textLabel.text = [self titleForRow:indexPath.row];
+//    cell.detailTextLabel.text = [self subtitleForRow:indexPath.row];
+//    
+//    return cell;
+//}
+
+
+#pragma mark - Properties
+
+// When our Model is set here, we update our title to be the Photographer's name
+//   and then set up our NSFetchedResultsController to make a request for Photos taken by that Photographer.
+
+- (void)setPhotographer:(Photographer *)photographer
 {
-    _photos = photos;
-    
-    [self.tableView reloadData];
+    _photographer = photographer;
+    self.title = photographer.name;
+    [self setupFetchedResultsController];
 }
 
-#pragma mark - Segue
+// Creates an NSFetchRequest for Photos sorted by their title where the whoTook relationship = our Model.
+// Note that we have the NSManagedObjectContext we need by asking our Model (the Photographer) for it.
+// Uses that to build and set our NSFetchedResultsController property inherited from CoreDataTableViewController.
 
-// prepares for the "Show Image" segue by seeing if the destination view controller of the segue
-//  understands the method "setImageURL:"
-// if it does, it sends setImageURL: to the destination view controller with
-//  the URL of the photo that was selected in the UITableView as the argument
-// also sets the title of the destination view controller to the photo's title
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue
-                 sender:(id)sender
+- (void)setupFetchedResultsController
 {
-    if ([sender isKindOfClass:[UITableViewCell class]]) {
-        NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-        if (indexPath) {
-            if ([segue.identifier isEqualToString:@"Show Image"]) {
-                if ([segue.destinationViewController respondsToSelector:@selector(setImageURL:)]) {
-                    NSURL *url = [FlickrFetcher urlForPhoto:self.photos[indexPath.row] format:FlickrPhotoFormatLarge];
-                    [segue.destinationViewController performSelector:@selector(setImageURL:) withObject:url];
-                    [segue.destinationViewController setTitle:[self titleForRow:indexPath.row]];
-                    [RecentsStore pushList:self.photos[indexPath.row]];
-                    
-                }
-            }
-        }
+    if (self.photographer.managedObjectContext) {
+        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Photo"];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"title" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]];
+        request.predicate = [NSPredicate predicateWithFormat:@"whoTook = %@", self.photographer];
+        
+        self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+                                                                            managedObjectContext:self.photographer.managedObjectContext
+                                                                              sectionNameKeyPath:nil
+                                                                                       cacheName:nil];
+    } else {
+        self.fetchedResultsController = nil;
     }
 }
 
 #pragma mark - UITableViewDataSource
 
-// lets the UITableView know how many rows it should display
-// in this case, just the count of dictionaries in the Model's array
-
-- (NSInteger)tableView:(UITableView *)tableView
- numberOfRowsInSection:(NSInteger)section
-{
-    return [self.photos count];
-}
-
-// a helper method that looks in the Model for the photo dictionary at the given row
-//  and gets the title out of it
-
-- (NSString *)titleForRow:(NSUInteger)row
-{
-    return [self.photos[row][FLICKR_PHOTO_TITLE] description]; // description because could be NSNull
-}
-
-// a helper method that looks in the Model for the photo dictionary at the given row
-//  and gets the owner of the photo out of it
-
-- (NSString *)subtitleForRow:(NSUInteger)row
-{
-    //    return [self.photos[row][FLICKR_PHOTO_OWNER] description]; // description because could be NSNull
-    // NOT objectForKey: FLICKR_PHOTO_DESCRIPTION is @"description._content"
-    return [self.photos[row] valueForKeyPath:FLICKR_PHOTO_DESCRIPTION];
-    
-}
-
-// loads up a table view cell with the title and owner of the photo at the given row in the Model
+// Loads up the cell for a given row by getting the associated Photo from our NSFetchedResultsController.
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Flickr Photo";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier
-                                                            forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
-    // Configure the cell...
-    cell.textLabel.text = [self titleForRow:indexPath.row];
-    cell.detailTextLabel.text = [self subtitleForRow:indexPath.row];
+    Photo *photo = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    
+    cell.textLabel.text = photo.title;
+    cell.detailTextLabel.text = photo.subtitle;
     
     return cell;
+    
 }
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
+#pragma mark - Segue
 
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
+// Gets the NSIndexPath of the UITableViewCell which is sender.
+// Then uses that NSIndexPath to find the Photographer in question using NSFetchedResultsController.
+// Prepares a destination view controller through the "setPhotographer:" segue by sending that to it.
 
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-#pragma mark - Table view delegate
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
+    NSIndexPath *indexPath = nil;
+    
+    if ([sender isKindOfClass:[UITableViewCell class]]) {
+        indexPath = [self.tableView indexPathForCell:sender];
+    }
+    
+    if (indexPath) {
+        if ([segue.identifier isEqualToString:@"Show Image"]) {
+            Photo *photo = [self.fetchedResultsController objectAtIndexPath:indexPath];
+            if ([segue.destinationViewController respondsToSelector:@selector(setImageURL:)]) {
+                [segue.destinationViewController performSelector:@selector(setImageURL:) withObject:[NSURL URLWithString:photo.imageURL]];
+            }
+            if ([segue.destinationViewController respondsToSelector:@selector(setTitle:)]) {
+                [segue.destinationViewController performSelector:@selector(setTitle:) withObject:photo.title];
+            }
+        }
+    }
 }
 
 @end

@@ -8,6 +8,8 @@
 
 #import "SPoTTableViewController.h"
 #import "FlickrFetcher.h"
+#import "Photo+Flickr.h"
+#import "Photographer.h"
 
 @interface SPoTTableViewController ()
 @property (nonatomic,strong) NSDictionary *photoList;
@@ -19,172 +21,144 @@
 //
 //
 //
-- (IBAction)refresh
-{
-    [self.refreshControl beginRefreshing];
-    dispatch_queue_t q = dispatch_queue_create("table view loading queue", NULL);
-    dispatch_async(q, ^{
-        NSArray *photos = [FlickrFetcher stanfordPhotos];
-        NSMutableDictionary *work = [[NSMutableDictionary alloc] init];
-        for (NSDictionary *photo in photos) {
-            // NSLog(@"%@", photo[FLICKR_TAGS]);
-            NSArray *tags = [photo[FLICKR_TAGS] componentsSeparatedByString:@" "];
-            for (NSString *tag in tags) {
-                if ((! [tag isEqualToString:@"cs193pspot"]) &&
-                    (! [tag isEqualToString:@"portrait"]) && (! [tag isEqualToString:@"landscape"])){
-                    // NSLog(@">> %@", tag);
-                    if (! work[tag]) {
-                        work[tag] = [[NSMutableArray alloc] init];
-                    }
-                    [work[tag] addObject:photo];
-                }
-            }
-        }
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.refreshControl endRefreshing];
-            self.photoList = work;
-            [self.tableView reloadData];
-        });
-    });
-}
 
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self.refreshControl addTarget:self
                             action:@selector(refresh)
                   forControlEvents:UIControlEventValueChanged];
-    [self refresh];
 }
 
-- (void)didReceiveMemoryWarning
+// Whenever the table is about to appear, if we have not yet opened/created or demo document, do so.
+
+- (void)viewWillAppear:(BOOL)animated
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    [super viewWillAppear:animated];
+    if (!self.managedObjectContext) [self useDemoDocument];
 }
 
+// Either creates, opens or just uses the demo document
+//   (actually, it will never "just use" it since it just creates the UIManagedDocument instance here;
+//    the "just uses" case is just shown that if someone hands you a UIManagedDocument, it might already
+//    be open and so you can just use it if it's documentState is UIDocumentStateNormal).
+//
+// Creating and opening are asynchronous, so in the completion handler we set our Model (managedObjectContext).
 
-#pragma mark - Segue
-
-// prepares for the "Show Image" segue by seeing if the destination view controller of the segue
-//  understands the method "setImageURL:"
-// if it does, it sends setImageURL: to the destination view controller with
-//  the URL of the photo that was selected in the UITableView as the argument
-// also sets the title of the destination view controller to the photo's title
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue
-                 sender:(id)sender
+- (void)useDemoDocument
 {
-    if ([sender isKindOfClass:[UITableViewCell class]]) {
-        NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-        if (indexPath) {
-            if ([segue.identifier isEqualToString:@"Show Detail"]) {
-                if ([segue.destinationViewController respondsToSelector:@selector(setPhotos:)]) {
-                    NSString *tag = [[self.photoList allKeys] objectAtIndex:indexPath.item];
-                    NSArray *list = self.photoList[tag];
-                    [segue.destinationViewController performSelector:@selector(setPhotos:)
-                                                          withObject:list];
-                    [segue.destinationViewController setTitle:tag];
-                }
+    NSURL *url = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    url = [url URLByAppendingPathComponent:@"Demo Document"];
+    UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:url];
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
+        [document saveToURL:url
+           forSaveOperation:UIDocumentSaveForCreating
+          completionHandler:^(BOOL success) {
+              if (success) {
+                  self.managedObjectContext = document.managedObjectContext;
+                  [self refresh];
+              }
+          }];
+    } else if (document.documentState == UIDocumentStateClosed) {
+        [document openWithCompletionHandler:^(BOOL success) {
+            if (success) {
+                self.managedObjectContext = document.managedObjectContext;
             }
-        }
+        }];
+    } else {
+        self.managedObjectContext = document.managedObjectContext;
     }
 }
 
+#pragma mark - Refreshing
 
-#pragma mark - Table view data source
+// Fires off a block on a queue to fetch data from Flickr.
+// When the data comes back, it is loaded into Core Data by posting a block to do so on
+//   self.managedObjectContext's proper queue (using performBlock:).
+// Data is loaded into Core Data by calling photoWithFlickrInfo:inManagedObjectContext: category method.
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+- (IBAction)refresh
 {
-    return 1;
+    [self.refreshControl beginRefreshing];
+    dispatch_queue_t fetchQ = dispatch_queue_create("Flickr Fetch", NULL);
+    dispatch_async(fetchQ, ^{
+        NSArray *photos = [FlickrFetcher latestGeoreferencedPhotos];
+        // put the photos in Core Data
+        [self.managedObjectContext performBlock:^{
+            for (NSDictionary *photo in photos) {
+                [Photo photoWithFlickrInfo:photo inManagedObjectContext:self.managedObjectContext];
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.refreshControl endRefreshing];
+            });
+        }];
+    });
 }
 
-- (NSInteger)tableView:(UITableView *)tableView
- numberOfRowsInSection:(NSInteger)section
+
+#pragma mark - Properties
+
+// The Model for this class.
+//
+// When it gets set, we create an NSFetchRequest to get all Photographers in the database associated with it.
+// Then we hook that NSFetchRequest up to the table view using an NSFetchedResultsController.
+
+- (void)setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
 {
-    return [[self.photoList allKeys] count];
+    _managedObjectContext = managedObjectContext;
+    if (managedObjectContext) {
+        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Photographer"];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]];
+        request.predicate = nil; // all Photographers
+        self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+                                                                            managedObjectContext:managedObjectContext
+                                                                              sectionNameKeyPath:nil
+                                                                                       cacheName:nil];
+    } else {
+        self.fetchedResultsController = nil;
+    }
 }
+
+#pragma mark - UITableViewDataSource
+
+// Uses NSFetchedResultsController's objectAtIndexPath: to find the Photographer for this row in the table.
+// Then uses that Photographer to set the cell up.
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Photo Tag";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier
-                                                            forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Photo Tag"];
     
-    NSString *tag = [[self.photoList allKeys] objectAtIndex:indexPath.item];
-    cell.textLabel.text = tag;
-    cell.detailTextLabel.text = [NSString stringWithFormat:@"Count: %d", [self.photoList[tag] count]];
+    Photographer *photographer = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    cell.textLabel.text = photographer.name;
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%d photos", [photographer.photos count]];
     
     return cell;
 }
 
+#pragma mark - Segue
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+// Gets the NSIndexPath of the UITableViewCell which is sender.
+// Then uses that NSIndexPath to find the Photographer in question using NSFetchedResultsController.
+// Prepares a destination view controller through the "setPhotographer:" segue by sending that to it.
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
+    NSIndexPath *indexPath = nil;
+    
+    if ([sender isKindOfClass:[UITableViewCell class]]) {
+        indexPath = [self.tableView indexPathForCell:sender];
+    }
+    
+    if (indexPath) {
+        if ([segue.identifier isEqualToString:@"Show Detail"]) {
+            Photographer *photographer = [self.fetchedResultsController objectAtIndexPath:indexPath];
+            if ([segue.destinationViewController respondsToSelector:@selector(setPhotographer:)]) {
+                [segue.destinationViewController performSelector:@selector(setPhotographer:) withObject:photographer];
+            }
+        }
+    }
 }
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-#pragma mark - Table view delegate
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
-}
-
 @end
