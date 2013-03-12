@@ -48,7 +48,10 @@
         dispatch_queue_t downloadQueue = dispatch_queue_create("image downloader", NULL);
         dispatch_async(downloadQueue, ^{
             
+            // really we should probably keep a count of threads claiming network activity
+            [UIApplication sharedApplication].networkActivityIndicatorVisible = YES; // bad
             NSData *imageData = [[NSData alloc] initWithContentsOfURL:self.imageURL];
+            [UIApplication sharedApplication].networkActivityIndicatorVisible = NO; // bad
             UIImage *image = [[UIImage alloc] initWithData:imageData];
             if (image) {
                 dispatch_async(dispatch_get_main_queue(), ^{
