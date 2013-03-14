@@ -1,18 +1,18 @@
 //
-//  Photographer.m
+//  Recents.m
 //  CoreDataSPoT
 //
 //  Created by Norimasa Nabeta on 2013/03/13.
 //  Copyright (c) 2013年 CS193p. All rights reserved.
 //
 
-#import "Photographer.h"
+#import "Recents.h"
 #import "Photo.h"
 
 
-@implementation Photographer
+@implementation Recents
 
-@dynamic name;
+@dynamic timestamp;
 @dynamic photos;
 
 @end

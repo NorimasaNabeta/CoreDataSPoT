@@ -6,14 +6,20 @@
         <attribute name="thumbnailURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="unique" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="whenLook" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Recents" inverseName="photos" inverseEntity="Recents" syncable="YES"/>
         <relationship name="whoTook" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Photographer" inverseName="photos" inverseEntity="Photographer" syncable="YES"/>
     </entity>
     <entity name="Photographer" representedClassName="Photographer" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Photo" inverseName="whoTook" inverseEntity="Photo" syncable="YES"/>
     </entity>
+    <entity name="Recents" representedClassName="Recents" syncable="YES">
+        <attribute name="timestamp" optional="YES" attributeType="Date" syncable="YES"/>
+        <relationship name="photos" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Photo" inverseName="whenLook" inverseEntity="Photo" syncable="YES"/>
+    </entity>
     <elements>
-        <element name="Photo" positionX="-63" positionY="-18" width="128" height="133"/>
+        <element name="Photo" positionX="-63" positionY="-18" width="128" height="148"/>
         <element name="Photographer" positionX="205" positionY="-171" width="128" height="73"/>
+        <element name="Recents" positionX="160" positionY="192" width="128" height="73"/>
     </elements>
 </model>

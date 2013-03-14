@@ -5,139 +5,172 @@
 //  Created by Norimasa Nabeta on 2013/03/07.
 //  Copyright (c) 2013年 CS193p. All rights reserved.
 //
-
+#import "SPoTAppDelegate.h"
 #import "SPoTRecentTableViewController.h"
 #import "FlickrFetcher.h"
-#import "RecentsStore.h"
+
 
 @interface SPoTRecentTableViewController ()
 
 @end
 
 @implementation SPoTRecentTableViewController
-@synthesize recentPlaces=_recentPlaces;
 
-- (NSArray*) recentPlaces
+#pragma mark - Properties
+// Whenever the table is about to appear, if we have not yet opened/created or demo document, do so.
+
+- (void)viewWillAppear:(BOOL)animated
 {
-    if(! _recentPlaces){
-        _recentPlaces = [RecentsStore getList];
-    }
-    return _recentPlaces;
-}
-- (void) setRecentPlaces:(NSArray *)recentPlaces
-{
-    _recentPlaces = recentPlaces;
-}
-
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-#pragma mark - Segue
-
-// prepares for the "Show Image" segue by seeing if the destination view controller of the segue
-//  understands the method "setImageURL:"
-// if it does, it sends setImageURL: to the destination view controller with
-//  the URL of the photo that was selected in the UITableView as the argument
-// also sets the title of the destination view controller to the photo's title
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue
-                 sender:(id)sender
-{
-    if ([sender isKindOfClass:[UITableViewCell class]]) {
-        NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-        if (indexPath) {
-            if ([segue.identifier isEqualToString:@"Show Recent"]) {
-                if ([segue.destinationViewController respondsToSelector:@selector(setImageURL:)]) {
-                    NSURL *url = [FlickrFetcher urlForPhoto:self.recentPlaces[indexPath.row] format:FlickrPhotoFormatLarge];
-                    [segue.destinationViewController performSelector:@selector(setImageURL:) withObject:url];
-                    [segue.destinationViewController setTitle:[self titleForRow:indexPath.row]];
-                }
-            }
-        }
+    [super viewWillAppear:animated];
+    if (!self.managedObjectContext){
+        [self useDemoDocument];
     }
 }
 
-#pragma mark - Table view data source
+// Either creates, opens or just uses the demo document
+//   (actually, it will never "just use" it since it just creates the UIManagedDocument instance here;
+//    the "just uses" case is just shown that if someone hands you a UIManagedDocument, it might already
+//    be open and so you can just use it if it's documentState is UIDocumentStateNormal).
+//
+// Creating and opening are asynchronous, so in the completion handler we set our Model (managedObjectContext).
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+- (void)useDemoDocument
 {
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView
- numberOfRowsInSection:(NSInteger)section
-{
-    return [self.recentPlaces count];
-}
-
-// a helper method that looks in the Model for the photo dictionary at the given row
-//  and gets the title out of it
-
-- (NSString *)titleForRow:(NSUInteger)row
-{
-    return [self.recentPlaces[row][FLICKR_PHOTO_TITLE] description]; // description because could be NSNull
-}
-
-// a helper method that looks in the Model for the photo dictionary at the given row
-//  and gets the owner of the photo out of it
-
-- (NSString *)subtitleForRow:(NSUInteger)row
-{
-    //    return [self.photos[row][FLICKR_PHOTO_OWNER] description]; // description because could be NSNull
-    // NOT objectForKey: FLICKR_PHOTO_DESCRIPTION is @"description._content"
-    return [self.recentPlaces[row] valueForKeyPath:FLICKR_PHOTO_DESCRIPTION];
+    NSURL *url = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    url = [url URLByAppendingPathComponent:@"Demo Document"];
+    UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:url];
     
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
+        [document saveToURL:url
+           forSaveOperation:UIDocumentSaveForCreating
+          completionHandler:^(BOOL success) {
+              if (success) {
+                  self.managedObjectContext = document.managedObjectContext;
+                  // [self refresh];
+              }
+          }];
+    } else if (document.documentState == UIDocumentStateClosed) {
+        [document openWithCompletionHandler:^(BOOL success) {
+            if (success) {
+                self.managedObjectContext = document.managedObjectContext;
+            }
+        }];
+    } else {
+        self.managedObjectContext = document.managedObjectContext;
+    }
+//    UIManagedDocument *sharedDocument = [ManagedDocumentHelper sharedManagedDocumentFortuneTweet];
+//    /// [self useDocument:sharedDocument];
+//    [ManagedDocumentHelper useDocument:sharedDocument
+//                            usingBlock: ^(BOOL success){
+//                                [self setupFetchedResultsController];
+//                                [self spinnerAction:NO];
+//                            }
+//                          debugComment:@"HT"];
+
 }
 
+- (void)setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
+{
+    _managedObjectContext = managedObjectContext;
+    if (managedObjectContext) {
+        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Recents"];
+        // request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]];
+
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES]];
+        request.predicate = nil; // all Recents
+        self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+                                                                            managedObjectContext:managedObjectContext
+                                                                              sectionNameKeyPath:nil
+                                                                                       cacheName:nil];
+    } else {
+        self.fetchedResultsController = nil;
+    }
+}
+
+//- (void)setupFetchedResultsController
+//{
+//    UIManagedDocument *sharedDocument = [ManagedDocumentHelper sharedManagedDocumentFortuneTweet];
+//    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"History"];
+//    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES]];
+//    request.predicate = nil; // all Recents    
+//    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+//                                                                        managedObjectContext:sharedDocument.managedObjectContext
+//                                                                          sectionNameKeyPath:nil
+//                                                                                   cacheName:nil];
+//}
+
+#pragma mark - UITableViewDataSource
+#pragma mark - Table view data source
+#pragma mark - Table view delegate
+
+/*
+ */
+
+// Loads up the cell for a given row by getting the associated Photo from our NSFetchedResultsController.
 
 - (UITableViewCell *)tableView:(UITableView *)tableView
          cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Recent Photo";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
-    NSDictionary *photo = [self.recentPlaces objectAtIndex:indexPath.row];
-    cell.textLabel.text = [FlickrFetcher stringValueFromKey:photo nameKey:FLICKR_PHOTO_TITLE];
-    cell.detailTextLabel.text = [FlickrFetcher stringValueFromKey:photo nameKey:FLICKR_PHOTO_DESCRIPTION];
+    Recents *recent = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    
+    cell.textLabel.text = recent.photos.title;
+    cell.detailTextLabel.text = recent.photos.subtitle;
+    
+    id appDelegate = (id)[[UIApplication sharedApplication] delegate];
+    NSString *idThumbnail = recent.photos.thumbnailURL;
+    UIImage *image = [[appDelegate imageCache] objectForKey:idThumbnail];
+    if (image) {
+        // NSLog(@"HIT user:%@ screen:%@", tweetuser, tweetscreenuser);
+        cell.imageView.image = image;
+    }
+    else {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSURL *url = [NSURL URLWithString:idThumbnail];
+            NSData *data = [NSData dataWithContentsOfURL:url];
+            [[appDelegate imageCache] setObject:[UIImage imageWithData:data] forKey:idThumbnail];
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [cell.imageView setImage:[UIImage imageWithData:data]];
+                [self.tableView reloadData];
+            });
+        });
+    }
     
     return cell;
+    
 }
 
+#pragma mark - Segue
 
-#pragma mark - Table view delegate
+// Gets the NSIndexPath of the UITableViewCell which is sender.
+// Then uses that NSIndexPath to find the Photographer in question using NSFetchedResultsController.
+// Prepares a destination view controller through the "setPhotographer:" segue by sending that to it.
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
+    NSIndexPath *indexPath = nil;
+    
+    if ([sender isKindOfClass:[UITableViewCell class]]) {
+        indexPath = [self.tableView indexPathForCell:sender];
+    }
+    
+    if (indexPath) {
+        if ([segue.identifier isEqualToString:@"Show Recent"]) {
+            Photo *photo = [self.fetchedResultsController objectAtIndexPath:indexPath];
+            if ([segue.destinationViewController respondsToSelector:@selector(setImageURL:)]) {
+                [segue.destinationViewController performSelector:@selector(setImageURL:) withObject:[NSURL URLWithString:photo.imageURL]];
+            }
+            if ([segue.destinationViewController respondsToSelector:@selector(setTitle:)]) {
+                [segue.destinationViewController performSelector:@selector(setTitle:) withObject:photo.title];
+            }
+            //[RecentsStore pushList:self.photos[indexPath.row]];
+            
+        }
+    }
 }
+
+
 
 @end

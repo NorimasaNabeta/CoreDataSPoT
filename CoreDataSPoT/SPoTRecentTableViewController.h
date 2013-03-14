@@ -8,10 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SPoTRecentTableViewController : UITableViewController
-- (NSString *)titleForRow:(NSUInteger)row;
-- (NSString *)subtitleForRow:(NSUInteger)row;
+#import "CoreDataTableViewController.h"
+#import "Recents.h"
+#import "Photo.h"
 
-@property (nonatomic,strong) NSArray *recentPlaces;
+@interface SPoTRecentTableViewController : CoreDataTableViewController
+@property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
+
 
 @end

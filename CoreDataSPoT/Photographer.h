@@ -2,7 +2,7 @@
 //  Photographer.h
 //  CoreDataSPoT
 //
-//  Created by Norimasa Nabeta on 2013/03/12.
+//  Created by Norimasa Nabeta on 2013/03/13.
 //  Copyright (c) 2013年 CS193p. All rights reserved.
 //
 
