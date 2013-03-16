@@ -11,9 +11,12 @@
 #import "Photo+Flickr.h"
 #import "Photographer.h"
 
+#import "ManagedDocumentHelper.h"
+
+
 @interface SPoTTableViewController () <UISplitViewControllerDelegate>
 @property (nonatomic,strong) NSDictionary *photoList;
-
+@property (nonatomic) UIManagedDocument *sharedDocument;
 @end
 
 @implementation SPoTTableViewController
@@ -47,42 +50,26 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    if (!self.managedObjectContext) [self useDemoDocument];
+    [ManagedDocumentHelper useDocument:self.sharedDocument
+                            usingBlock: ^(BOOL success){ [self refresh]; }
+                          debugComment:@"BK"];
 }
 
-// Either creates, opens or just uses the demo document
-//   (actually, it will never "just use" it since it just creates the UIManagedDocument instance here;
-//    the "just uses" case is just shown that if someone hands you a UIManagedDocument, it might already
-//    be open and so you can just use it if it's documentState is UIDocumentStateNormal).
-//
-// Creating and opening are asynchronous, so in the completion handler we set our Model (managedObjectContext).
-
-- (void)useDemoDocument
+- (UIManagedDocument *) sharedDocument
 {
-    NSURL *url = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-    url = [url URLByAppendingPathComponent:@"Demo Document"];
-    UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:url];
-    
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
-        [document saveToURL:url
-           forSaveOperation:UIDocumentSaveForCreating
-          completionHandler:^(BOOL success) {
-              if (success) {
-                  self.managedObjectContext = document.managedObjectContext;
-                  [self refresh];
-              }
-          }];
-    } else if (document.documentState == UIDocumentStateClosed) {
-        [document openWithCompletionHandler:^(BOOL success) {
-            if (success) {
-                self.managedObjectContext = document.managedObjectContext;
-            }
-        }];
-    } else {
-        self.managedObjectContext = document.managedObjectContext;
-    }
-}
+    if (! _sharedDocument) {
+        _sharedDocument = ManagedDocumentHelper.sharedManagedDocument;
 
+        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Photographer"];
+        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]];
+        request.predicate = nil; // all Photographers
+        self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
+                                                                            managedObjectContext:_sharedDocument.managedObjectContext
+                                                                              sectionNameKeyPath:nil
+                                                                                       cacheName:nil];
+    }
+    return _sharedDocument;
+}
 #pragma mark - Refreshing
 
 // Fires off a block on a queue to fetch data from Flickr.
@@ -97,9 +84,9 @@
     dispatch_async(fetchQ, ^{
         NSArray *photos = [FlickrFetcher latestGeoreferencedPhotos];
         // put the photos in Core Data
-        [self.managedObjectContext performBlock:^{
+        [self.sharedDocument.managedObjectContext performBlock:^{
             for (NSDictionary *photo in photos) {
-                [Photo photoWithFlickrInfo:photo inManagedObjectContext:self.managedObjectContext];
+                [Photo photoWithFlickrInfo:photo inManagedObjectContext:self.sharedDocument.managedObjectContext];
             }
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.refreshControl endRefreshing];
@@ -110,28 +97,6 @@
 
 
 #pragma mark - Properties
-
-// The Model for this class.
-//
-// When it gets set, we create an NSFetchRequest to get all Photographers in the database associated with it.
-// Then we hook that NSFetchRequest up to the table view using an NSFetchedResultsController.
-
-- (void)setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
-{
-    _managedObjectContext = managedObjectContext;
-    if (managedObjectContext) {
-        NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Photographer"];
-        request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]];
-        request.predicate = nil; // all Photographers
-        self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
-                                                                            managedObjectContext:managedObjectContext
-                                                                              sectionNameKeyPath:nil
-                                                                                       cacheName:nil];
-    } else {
-        self.fetchedResultsController = nil;
-    }
-}
-
 #pragma mark - UITableViewDataSource
 
 // Uses NSFetchedResultsController's objectAtIndexPath: to find the Photographer for this row in the table.

@@ -10,6 +10,6 @@
 #import "CoreDataTableViewController.h"
 
 @interface SPoTTableViewController : CoreDataTableViewController
-@property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
+// @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 
 @end

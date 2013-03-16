@@ -9,95 +9,80 @@
 #import "SPoTRecentTableViewController.h"
 #import "FlickrFetcher.h"
 
+#import "ManagedDocumentHelper.h"
+
 
 @interface SPoTRecentTableViewController ()
-
+@property (nonatomic) UIManagedDocument *sharedDocument;
 @end
 
 @implementation SPoTRecentTableViewController
 
 #pragma mark - Properties
+
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    // self.debug = YES;
+    [self.refreshControl addTarget:self
+                            action:@selector(refresh)
+                  forControlEvents:UIControlEventValueChanged];
+}
 // Whenever the table is about to appear, if we have not yet opened/created or demo document, do so.
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    if (!self.managedObjectContext){
-        [self useDemoDocument];
-    }
+    [ManagedDocumentHelper useDocument:self.sharedDocument
+                            usingBlock: ^(BOOL success){ ; }
+                          debugComment:@"BK"];
 }
 
-// Either creates, opens or just uses the demo document
-//   (actually, it will never "just use" it since it just creates the UIManagedDocument instance here;
-//    the "just uses" case is just shown that if someone hands you a UIManagedDocument, it might already
-//    be open and so you can just use it if it's documentState is UIDocumentStateNormal).
-//
-// Creating and opening are asynchronous, so in the completion handler we set our Model (managedObjectContext).
-
-- (void)useDemoDocument
+- (UIManagedDocument *) sharedDocument
 {
-    NSURL *url = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-    url = [url URLByAppendingPathComponent:@"Demo Document"];
-    UIManagedDocument *document = [[UIManagedDocument alloc] initWithFileURL:url];
-    
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
-        [document saveToURL:url
-           forSaveOperation:UIDocumentSaveForCreating
-          completionHandler:^(BOOL success) {
-              if (success) {
-                  self.managedObjectContext = document.managedObjectContext;
-                  // [self refresh];
-              }
-          }];
-    } else if (document.documentState == UIDocumentStateClosed) {
-        [document openWithCompletionHandler:^(BOOL success) {
-            if (success) {
-                self.managedObjectContext = document.managedObjectContext;
-            }
-        }];
-    } else {
-        self.managedObjectContext = document.managedObjectContext;
-    }
-//    UIManagedDocument *sharedDocument = [ManagedDocumentHelper sharedManagedDocumentFortuneTweet];
-//    /// [self useDocument:sharedDocument];
-//    [ManagedDocumentHelper useDocument:sharedDocument
-//                            usingBlock: ^(BOOL success){
-//                                [self setupFetchedResultsController];
-//                                [self spinnerAction:NO];
-//                            }
-//                          debugComment:@"HT"];
-
-}
-
-- (void)setManagedObjectContext:(NSManagedObjectContext *)managedObjectContext
-{
-    _managedObjectContext = managedObjectContext;
-    if (managedObjectContext) {
+    if (! _sharedDocument) {
+        _sharedDocument = ManagedDocumentHelper.sharedManagedDocument;        
         NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Recents"];
-        // request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)]];
-
         request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES]];
         request.predicate = nil; // all Recents
         self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
-                                                                            managedObjectContext:managedObjectContext
+                                                                            managedObjectContext:_sharedDocument.managedObjectContext
                                                                               sectionNameKeyPath:nil
                                                                                        cacheName:nil];
-    } else {
-        self.fetchedResultsController = nil;
     }
+    return _sharedDocument;
+}
+#pragma mark - Refreshing
+
+// Fires off a block on a queue to fetch data from Flickr.
+// When the data comes back, it is loaded into Core Data by posting a block to do so on
+//   self.managedObjectContext's proper queue (using performBlock:).
+// Data is loaded into Core Data by calling photoWithFlickrInfo:inManagedObjectContext: category method.
+
+- (IBAction)refresh
+{
+    [self.refreshControl beginRefreshing];
+    [self.refreshControl endRefreshing];
+    /*
+     [self.refreshControl beginRefreshing];
+    dispatch_queue_t fetchQ = dispatch_queue_create("Flickr Fetch", NULL);
+    dispatch_async(fetchQ, ^{
+        NSArray *photos = [FlickrFetcher latestGeoreferencedPhotos];
+        // put the photos in Core Data
+        [self.sharedDocument.managedObjectContext performBlock:^{
+            for (NSDictionary *photo in photos) {
+                [Photo photoWithFlickrInfo:photo inManagedObjectContext:self.sharedDocument.managedObjectContext];
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.refreshControl endRefreshing];
+            });
+        }];
+    });
+ */
 }
 
-//- (void)setupFetchedResultsController
-//{
-//    UIManagedDocument *sharedDocument = [ManagedDocumentHelper sharedManagedDocumentFortuneTweet];
-//    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"History"];
-//    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES]];
-//    request.predicate = nil; // all Recents    
-//    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:request
-//                                                                        managedObjectContext:sharedDocument.managedObjectContext
-//                                                                          sectionNameKeyPath:nil
-//                                                                                   cacheName:nil];
-//}
+
 
 #pragma mark - UITableViewDataSource
 #pragma mark - Table view data source
@@ -158,14 +143,15 @@
     
     if (indexPath) {
         if ([segue.identifier isEqualToString:@"Show Recent"]) {
-            Photo *photo = [self.fetchedResultsController objectAtIndexPath:indexPath];
+            Recents *recent = [self.fetchedResultsController objectAtIndexPath:indexPath];
             if ([segue.destinationViewController respondsToSelector:@selector(setImageURL:)]) {
-                [segue.destinationViewController performSelector:@selector(setImageURL:) withObject:[NSURL URLWithString:photo.imageURL]];
+                [segue.destinationViewController performSelector:@selector(setImageURL:)
+                                                      withObject:[NSURL URLWithString:recent.photos.imageURL]];
             }
             if ([segue.destinationViewController respondsToSelector:@selector(setTitle:)]) {
-                [segue.destinationViewController performSelector:@selector(setTitle:) withObject:photo.title];
+                [segue.destinationViewController performSelector:@selector(setTitle:)
+                                                      withObject:recent.photos.title];
             }
-            //[RecentsStore pushList:self.photos[indexPath.row]];
             
         }
     }

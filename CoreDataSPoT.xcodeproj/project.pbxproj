@@ -35,6 +35,7 @@
 		F2AEC42E16EFD73D004ED2D5 /* Recents.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC42D16EFD73D004ED2D5 /* Recents.m */; };
 		F2AEC43116EFD73E004ED2D5 /* Photographer.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC43016EFD73E004ED2D5 /* Photographer.m */; };
 		F2AEC43416EFD73F004ED2D5 /* Photo.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC43316EFD73F004ED2D5 /* Photo.m */; };
+		F2AEC43816F3EF2D004ED2D5 /* ManagedDocumentHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = F2AEC43716F3EF2D004ED2D5 /* ManagedDocumentHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -85,6 +86,9 @@
 		F2AEC43016EFD73E004ED2D5 /* Photographer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Photographer.m; sourceTree = "<group>"; };
 		F2AEC43216EFD73E004ED2D5 /* Photo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Photo.h; sourceTree = "<group>"; };
 		F2AEC43316EFD73F004ED2D5 /* Photo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Photo.m; sourceTree = "<group>"; };
+		F2AEC43516F3EEE4004ED2D5 /* SplitViewBarButtonItemPresenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitViewBarButtonItemPresenter.h; sourceTree = "<group>"; };
+		F2AEC43616F3EF2C004ED2D5 /* ManagedDocumentHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ManagedDocumentHelper.h; sourceTree = "<group>"; };
+		F2AEC43716F3EF2D004ED2D5 /* ManagedDocumentHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ManagedDocumentHelper.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -146,7 +150,10 @@
 				F2AEC3EF16E8C463004ED2D5 /* SPoTRecentTableViewController.m */,
 				F2AEC3F416E8CBC9004ED2D5 /* RecentsStore.h */,
 				F2AEC3F516E8CBC9004ED2D5 /* RecentsStore.m */,
+				F2AEC43516F3EEE4004ED2D5 /* SplitViewBarButtonItemPresenter.h */,
 				F2AEC3F116E8C48F004ED2D5 /* SPoTImageViewController.h */,
+				F2AEC43616F3EF2C004ED2D5 /* ManagedDocumentHelper.h */,
+				F2AEC43716F3EF2D004ED2D5 /* ManagedDocumentHelper.m */,
 				F2AEC3F216E8C48F004ED2D5 /* SPoTImageViewController.m */,
 				F2AEC3D516E7F033004ED2D5 /* MainStoryboard_iPad.storyboard */,
 				F2AEC3D816E7F033004ED2D5 /* SPoTViewController.h */,
@@ -289,6 +296,7 @@
 				F2AEC42E16EFD73D004ED2D5 /* Recents.m in Sources */,
 				F2AEC43116EFD73E004ED2D5 /* Photographer.m in Sources */,
 				F2AEC43416EFD73F004ED2D5 /* Photo.m in Sources */,
+				F2AEC43816F3EF2D004ED2D5 /* ManagedDocumentHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

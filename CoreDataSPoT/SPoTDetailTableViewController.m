@@ -8,11 +8,11 @@
 #import "SPoTAppDelegate.h"
 #import "SPoTDetailTableViewController.h"
 #import "FlickrFetcher.h"
-#import "RecentsStore.h"
+// #import "RecentsStore.h"
 
 #import "Photo.h"
 #import "Photographer.h"
-
+#import "Recents+Create.h"
 
 @interface SPoTDetailTableViewController () 
 
@@ -120,6 +120,8 @@
                 [segue.destinationViewController performSelector:@selector(setTitle:) withObject:photo.title];
             }
             //[RecentsStore pushList:self.photos[indexPath.row]];
+            [Recents recentsViewPhoto:photo inManagedObjectContext:photo.managedObjectContext];
+
 
         }
     }
